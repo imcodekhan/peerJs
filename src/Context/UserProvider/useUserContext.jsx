@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { UserContext } from "./userProvider";
+import { UserContext } from ".";
 
 const useUserContenxt = () => {
   const { state, dispatch } = useContext(UserContext);

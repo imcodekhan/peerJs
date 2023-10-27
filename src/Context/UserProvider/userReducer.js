@@ -5,7 +5,7 @@ export const reducer = (state, action) => {
     case ActionTypes.INITIALIZE:
       return {
         ...state,
-        userData: action.payload,
+        ...action.payload,
       };
     case ActionTypes.UPDATE_NAME:
       return {

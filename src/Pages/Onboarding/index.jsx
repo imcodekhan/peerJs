@@ -17,6 +17,8 @@ const Onboarding = () => {
   const { state, dispatch } = useUserContext();
   const navigate = useNavigate();
 
+  console.log({ state });
+
   useEffect(() => {
     const localPhoneNumber = localStorage.getItem("phoneNumber");
     if (localPhoneNumber) {

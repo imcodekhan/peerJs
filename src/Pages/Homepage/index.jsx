@@ -18,6 +18,7 @@ const Homepage = () => {
 
   useEffect(() => {
     const localPhoneNumber = localStorage.getItem("phoneNumber");
+
     const peer = new Peer(localPhoneNumber);
     peerInstanceRef.current = peer;
 

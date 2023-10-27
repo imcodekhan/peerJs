@@ -10,7 +10,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { PhoneIcon } from "@chakra-ui/icons";
-import { func, string } from "prop-types";
+import { func } from "prop-types";
 import { useState } from "react";
 import { getUserByPhoneNumber } from "../../../Services/crud";
 
@@ -20,22 +20,19 @@ const AddContact = ({ handleAddContact }) => {
 
   async function handleSubmit(e) {
     e.preventDefault();
-    try {
-      if (destPhoneNumber.length !== 10) {
-        setError("Phone numbe shoud be 10 digits");
-        return;
-      }
-      setError("");
-      const contactDetails = await getUserByPhoneNumber(destPhoneNumber);
-      if (!contactDetails) {
-        setError("Check the number again; no contact details for this.");
-        return;
-      }
-      handleAddContact(contactDetails);
-    } catch (error) {
-      console.error(error);
+    if (destPhoneNumber.length !== 10) {
+      setError("Phone numbe shoud be 10 digits");
+      return;
     }
+    setError("");
+    const contactDetails = await getUserByPhoneNumber(destPhoneNumber);
+    if (!contactDetails) {
+      setError("Check the number again; no contact details for this.");
+      return;
+    }
+    handleAddContact(contactDetails);
   }
+
   return (
     <>
       <Text>We are one click just away</Text>
@@ -75,8 +72,6 @@ const AddContact = ({ handleAddContact }) => {
 };
 
 AddContact.propTypes = {
-  destPhoneNumber: string.isRequired,
-  setDestPhoneNumber: func.isRequired,
   handleAddContact: func.isRequired,
 };
 
