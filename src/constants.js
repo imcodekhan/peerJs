@@ -11,3 +11,9 @@ export const SCREENS = {
   CALL_INPROGRESS: "CALL_INPROGRESS",
   HOMEPAGE: "HOMEPAGE",
 };
+
+export const ROUTES = {
+  ANY: "*",
+  ONBOARDING: "/",
+  HOMEPAGE: "/homepage",
+};
