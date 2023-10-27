@@ -1,19 +1,19 @@
 import { PhoneIcon } from "@chakra-ui/icons";
 import { SCREENS } from "../../constants";
 import { useEffect, useRef, useState } from "react";
-import AddFirstContact from "../AddFirstContact";
 import { List, ListItem, Modal, Text } from "@chakra-ui/react";
-import CallOutgoing from "../CallOutgoing";
-import CallIncoming from "../CallIcoming";
+import CallOutgoing from "./CallOutgoing";
+import CallIncoming from "./CallInprogress/CallIcoming";
 import Peer from "peerjs";
-import CallInprogress from "../CallInprogress";
+import CallInprogress from "./CallInprogress";
 import { getUserByPhoneNumber, updatedUser } from "../../Services/crud";
+import Layout from "../../Components/Layout";
+import AddContact from "./AddContact";
 
 const Homepage = () => {
   const [screen, setScreen] = useState();
   const localStreamRef = useRef(null);
   const remoteStreamRef = useRef(null);
-  const [destPhoneNumber, setDestPhoneNumber] = useState("");
   const peerInstanceRef = useRef(null);
 
   useEffect(() => {
@@ -64,11 +64,7 @@ const Homepage = () => {
 
   const renderScreen = {
     [SCREENS.ADD_FIRST_CONTACT]: (
-      <AddFirstContact
-        destPhoneNumber={destPhoneNumber}
-        setDestPhoneNumber={setDestPhoneNumber}
-        handleAddContact={handleAddContact}
-      />
+      <AddContact handleAddContact={handleAddContact} />
     ),
     [SCREENS.CALL_OUTGOING]: (
       <CallOutgoing handleScreenChange={({ screen }) => setScreen(screen)} />
@@ -99,7 +95,7 @@ const Homepage = () => {
   }
 
   return (
-    <>
+    <Layout>
       {screen && (
         <Modal isOpen={true} size={"full"}>
           {renderScreen[screen]}
@@ -118,7 +114,7 @@ const Homepage = () => {
           );
         })}
       </List>
-    </>
+    </Layout>
   );
 };
 

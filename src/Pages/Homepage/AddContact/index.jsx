@@ -11,14 +11,11 @@ import {
 } from "@chakra-ui/react";
 import { PhoneIcon } from "@chakra-ui/icons";
 import { func, string } from "prop-types";
-import { getUserByPhoneNumber } from "../../Services/crud";
 import { useState } from "react";
+import { getUserByPhoneNumber } from "../../../Services/crud";
 
-const AddContact = ({
-  destPhoneNumber,
-  setDestPhoneNumber,
-  handleAddContact,
-}) => {
+const AddContact = ({ handleAddContact }) => {
+  const [destPhoneNumber, setDestPhoneNumber] = useState("");
   const [error, setError] = useState("");
 
   async function handleSubmit(e) {

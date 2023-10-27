@@ -1,7 +1,7 @@
 import { ArrowRightIcon } from "@chakra-ui/icons";
 import { Button, Center, Text } from "@chakra-ui/react";
 import { func } from "prop-types";
-import { STEPS } from "../../constants";
+import { STEPS } from "../../../constants";
 
 const Introduction = ({ handleNextStep }) => {
   return (

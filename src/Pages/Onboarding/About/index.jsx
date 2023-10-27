@@ -1,23 +1,26 @@
-import { ArrowRightIcon } from "@chakra-ui/icons";
-import { Button, Center, Input, Text } from "@chakra-ui/react";
-import { STEPS } from "../../constants";
-import { func, string } from "prop-types";
 import { useState } from "react";
-import { updatedUser } from "../../Services/crud";
+import { func } from "prop-types";
+import { Button, Center, Input, Text } from "@chakra-ui/react";
+import { ArrowRightIcon } from "@chakra-ui/icons";
 
-const About = ({ name, setName, handleNextStep }) => {
+const About = ({ handleAboutUpdate }) => {
+  const [name, setName] = useState("");
   const [error, setError] = useState("");
+
   function handleSubmit(e) {
     e.preventDefault();
-    if (!name.length) {
-      setError("please tell us what should we call you?");
-      return;
+    try {
+      if (!name.length) {
+        setError("please tell us what should we call you?");
+        return;
+      }
+      setError("");
+      handleAboutUpdate({ name });
+    } catch (error) {
+      console.error(error);
     }
-    setError("");
-    const localPhoneNumber = localStorage.getItem("phoneNumber");
-    updatedUser(localPhoneNumber, { name });
-    handleNextStep({ step: STEPS.ADD_FIRST_CONTACT });
   }
+
   return (
     <>
       <Text>
@@ -49,9 +52,7 @@ const About = ({ name, setName, handleNextStep }) => {
 };
 
 About.propTypes = {
-  name: string.isRequired,
-  setName: func.isRequired,
-  handleNextStep: func.isRequired,
+  handleAboutUpdate: func.isRequired,
 };
 
 export default About;

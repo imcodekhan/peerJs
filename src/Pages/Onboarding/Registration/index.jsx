@@ -1,4 +1,5 @@
-import { ArrowRightIcon } from "@chakra-ui/icons";
+import { useState } from "react";
+import { func } from "prop-types";
 import {
   Button,
   Center,
@@ -11,12 +12,10 @@ import {
   InputLeftElement,
   Text,
 } from "@chakra-ui/react";
-import { func, string } from "prop-types";
-import { useState } from "react";
-import { STEPS } from "../../constants";
-import { registerUser } from "../../Services/crud.js";
+import { ArrowRightIcon } from "@chakra-ui/icons";
 
-const Registration = ({ phoneNumber, setPhoneNumber, handleNextStep }) => {
+const Registration = ({ handleRegistration }) => {
+  const [phoneNumber, setPhoneNumber] = useState("");
   const [error, setError] = useState("");
 
   function handlesubmit(e) {
@@ -30,10 +29,7 @@ const Registration = ({ phoneNumber, setPhoneNumber, handleNextStep }) => {
       return;
     }
     setError("");
-
-    localStorage.setItem("phoneNumber", phoneNumber);
-    registerUser(phoneNumber);
-    handleNextStep({ step: STEPS.ABOUT });
+    handleRegistration(phoneNumber);
   }
 
   return (
@@ -77,9 +73,7 @@ const Registration = ({ phoneNumber, setPhoneNumber, handleNextStep }) => {
 };
 
 Registration.propTypes = {
-  phoneNumber: string.isRequired,
-  setPhoneNumber: func.isRequired,
-  handleNextStep: func.isRequired,
+  handleRegistration: func.isRequired,
 };
 
 export default Registration;

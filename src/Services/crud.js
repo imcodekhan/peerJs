@@ -1,13 +1,15 @@
 import { getDatabase, ref, set, get, child } from "firebase/database";
 
-export function registerUser(phoneNumber) {
+export async function registerUser(phoneNumber) {
   try {
     const db = getDatabase();
-    set(ref(db, "users/" + phoneNumber), {
+    await set(ref(db, "users/" + phoneNumber), {
       phoneNumber,
     });
+    return { success: true };
   } catch (error) {
     console.error("User registration failed:", error);
+    return { success: false };
   }
 }
 
