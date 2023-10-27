@@ -1,18 +1,9 @@
 import { Button, Center, Text } from "@chakra-ui/react";
-import { STEPS } from "../../constants";
 import { func } from "prop-types";
-import { useEffect } from "react";
 import { PhoneIcon } from "@chakra-ui/icons";
 
-const CallIncoming = ({ handleNextStep }) => {
+const CallIncoming = ({ handleCallRecieve }) => {
   const callerName = "pathak";
-
-  useEffect(() => {
-    const isCallConnected = false;
-    if (isCallConnected) {
-      handleNextStep({ step: STEPS.CALL_INPROGRESS });
-    }
-  }, []);
 
   return (
     <>
@@ -23,7 +14,7 @@ const CallIncoming = ({ handleNextStep }) => {
           borderRadius={"full"}
           height={90}
           width={90}
-          onClick={handleNextStep({ step: STEPS.CALL_OUTGOING })}
+          onClick={handleCallRecieve}
         >
           <PhoneIcon color={"blue.500"} height={30} width={30} />
         </Button>
@@ -33,7 +24,7 @@ const CallIncoming = ({ handleNextStep }) => {
 };
 
 CallIncoming.propTypes = {
-  handleNextStep: func.isRequired,
+  handleCallRecieve: func,
 };
 
 export default CallIncoming;

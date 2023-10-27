@@ -1,25 +1,28 @@
 import { Card, CardBody, Center } from "@chakra-ui/react";
 // import Peer from "peerjs";
-import { useState } from "react";
-import Introduction from "./pages/Introductions";
-import Registration from "./pages/Registration";
+import { useEffect, useState } from "react";
+import Registration from "./Pages/Registration";
 import { STEPS } from "./constants";
-import AddFirstContact from "./pages/AddFirstContact";
-import About from "./pages/About";
-import CallOutgoing from "./pages/CallOutgoing";
-import CallIncoming from "./pages/CallIcoming";
-import CallInprogress from "./pages/CallInprogress";
-import Homepage from "./pages/Homepage";
+import About from "./Pages/About";
+import Homepage from "./Pages/Homepage";
+import Introduction from "./Pages/Introduction";
 
 const App = () => {
   const [step, setstep] = useState();
   const [name, setName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
-  const [destPhoneNumber, setDestPhoneNumber] = useState("");
 
   // const [peer, setPeer] = useState();
-  // const localStreamRef = useRef(null);
-  // const remoteStreamRef = useRef(null);
+
+  useEffect(() => {
+    console.log("mounted", step);
+    const localPhoneNumber = localStorage.getItem("phoneNumber");
+    if (localPhoneNumber) {
+      setstep(STEPS.HOMEPAGE);
+    } else {
+      setstep(STEPS.INTRODUCTION);
+    }
+  }, []);
 
   // useEffect(() => {
   //   const peer = new Peer();
@@ -73,22 +76,6 @@ const App = () => {
         setName={setName}
         handleNextStep={({ step }) => setstep(step)}
       />
-    ),
-    [STEPS.ADD_FIRST_CONTACT]: (
-      <AddFirstContact
-        destPhoneNumber={destPhoneNumber}
-        setDestPhoneNumber={setDestPhoneNumber}
-        handleNextStep={({ step }) => setstep(step)}
-      />
-    ),
-    [STEPS.CALL_OUTGOING]: (
-      <CallOutgoing handleNextStep={({ step }) => setstep(step)} />
-    ),
-    [STEPS.CALL_INCOMING]: (
-      <CallIncoming handleNextStep={({ step }) => setstep(step)} />
-    ),
-    [STEPS.CALL_INPROGRESS]: (
-      <CallInprogress handleNextStep={({ step }) => setstep(step)} />
     ),
     [STEPS.HOMEPAGE]: <Homepage handleNextStep={({ step }) => setstep(step)} />,
   };

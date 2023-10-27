@@ -1,7 +1,7 @@
 import { ArrowRightIcon } from "@chakra-ui/icons";
 import { Button, Center, Text } from "@chakra-ui/react";
-import { STEPS } from "../../App";
 import { func } from "prop-types";
+import { STEPS } from "../../constants";
 
 const Introduction = ({ handleNextStep }) => {
   return (
@@ -27,7 +27,7 @@ const Introduction = ({ handleNextStep }) => {
           borderRadius={"full"}
           height={90}
           width={90}
-          onClick={handleNextStep({ step: STEPS.REGISTRATION })}
+          onClick={() => handleNextStep({ step: STEPS.REGISTRATION })}
         >
           <ArrowRightIcon color={"blue.500"} height={30} width={30} />
         </Button>

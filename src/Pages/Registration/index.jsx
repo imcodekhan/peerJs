@@ -14,6 +14,7 @@ import {
 import { func, string } from "prop-types";
 import { useState } from "react";
 import { STEPS } from "../../constants";
+import { registerUser } from "../../Services/crud.js";
 
 const Registration = ({ phoneNumber, setPhoneNumber, handleNextStep }) => {
   const [error, setError] = useState("");
@@ -31,6 +32,7 @@ const Registration = ({ phoneNumber, setPhoneNumber, handleNextStep }) => {
     setError("");
 
     localStorage.setItem("phoneNumber", phoneNumber);
+    registerUser(phoneNumber);
     handleNextStep({ step: STEPS.ABOUT });
   }
 
