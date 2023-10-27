@@ -17,7 +17,6 @@ const Onboarding = () => {
   const { state, dispatch } = useUserContext();
   const navigate = useNavigate();
 
-  // Check if the phone number is already in local storage and skip onboarding if it is.
   useEffect(() => {
     const localPhoneNumber = localStorage.getItem("phoneNumber");
     if (localPhoneNumber) {
@@ -25,25 +24,22 @@ const Onboarding = () => {
     }
   }, [navigate]);
 
-  const handleRegistration = async (phoneNumber) => {
+  async function handleRegistration(phoneNumber) {
     const { success } = await registerUser(phoneNumber);
     if (success) {
-      updateUserDataAndNavigate(phoneNumber, STEPS.ABOUT);
+      localStorage.setItem("phoneNumber", phoneNumber);
+      dispatch(updatePhoneNumber(phoneNumber));
+      setStep(STEPS.ABOUT);
     }
-  };
+  }
 
-  const handleAboutUpdate = async (name) => {
+  async function handleAboutUpdate(name) {
     const { success } = await updatedUser(state.phoneNumber, name);
     if (success) {
-      updateUserDataAndNavigate(state.phoneNumber, ROUTES.HOMEPAGE);
+      dispatch(updateName(name));
+      navigate(ROUTES.HOMEPAGE);
     }
-  };
-
-  const updateUserDataAndNavigate = (phoneNumber, nextStep) => {
-    localStorage.setItem("phoneNumber", phoneNumber);
-    dispatch(updatePhoneNumber(phoneNumber));
-    setStep(nextStep);
-  };
+  }
 
   const renderStep = {
     [STEPS.INTRODUCTION]: (
