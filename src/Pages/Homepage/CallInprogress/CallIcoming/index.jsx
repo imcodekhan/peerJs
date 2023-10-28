@@ -1,10 +1,8 @@
 import { Button, Center, Text } from "@chakra-ui/react";
-import { func } from "prop-types";
+import { func, string } from "prop-types";
 import { PhoneIcon } from "@chakra-ui/icons";
 
-const CallIncoming = ({ handleCallRecieve }) => {
-  const callerName = "pathak";
-
+const CallIncoming = ({ callerName, handleCallRecieve }) => {
   return (
     <>
       <Text>your bondhu {callerName} is calling you</Text>
@@ -24,7 +22,8 @@ const CallIncoming = ({ handleCallRecieve }) => {
 };
 
 CallIncoming.propTypes = {
-  handleCallRecieve: func,
+  callerName: string,
+  handleCallRecieve: func.isRequired,
 };
 
 export default CallIncoming;

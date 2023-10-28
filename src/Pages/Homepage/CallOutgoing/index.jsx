@@ -1,7 +1,7 @@
 import { Text } from "@chakra-ui/react";
 import { string } from "prop-types";
 
-const CallOutgoing = (contactName) => {
+const CallOutgoing = ({ contactName }) => {
   return (
     <>
       <Text>We are calling {contactName}</Text>

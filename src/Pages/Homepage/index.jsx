@@ -1,24 +1,50 @@
-import { PhoneIcon } from "@chakra-ui/icons";
 import { SCREENS } from "../../constants";
 import { useEffect, useRef, useState } from "react";
-import { List, ListItem, Modal, Text } from "@chakra-ui/react";
 import CallOutgoing from "./CallOutgoing";
 import CallIncoming from "./CallInprogress/CallIcoming";
 import Peer from "peerjs";
 import CallInprogress from "./CallInprogress";
-import { getUserByPhoneNumber, updatedUser } from "../../Services/crud";
+import { getUserDetails, updateUserDetails } from "../../Services/crud";
 import Layout from "../../Components/Layout";
 import AddContact from "./AddContact";
+import useUserContenxt from "../../Context/UserProvider/useUserContext";
+import {
+  addContact,
+  initializeUser,
+} from "../../Context/UserProvider/userActions";
+import Dashboard from "./Dashboard";
 
 const Homepage = () => {
-  const [screen, setScreen] = useState();
-  const localStreamRef = useRef(null);
-  const remoteStreamRef = useRef(null);
+  const [screen, setScreen] = useState(SCREENS.DASHBOARD);
+  const [localStream, setLocalStream] = useState();
+  const [remoteStream, setRemoteStream] = useState();
+  const { state, dispatch } = useUserContenxt();
+  const localPhoneNumber = localStorage.getItem("phoneNumber");
+  const [remoteContactDetails, setRemoteContactDetails] = useState();
   const peerInstanceRef = useRef(null);
+  const localCallRef = useRef(null);
+  const remoteCallRef = useRef(null);
 
   useEffect(() => {
-    const localPhoneNumber = localStorage.getItem("phoneNumber");
+    async function init() {
+      const user = await getUserDetails(localPhoneNumber);
+      const allContactDetailsQueries = [];
+      if (user?.contacts?.length) {
+        user.contacts.forEach((contact) => {
+          allContactDetailsQueries.push(getUserDetails(contact));
+        });
+        user.contacts = await Promise.all(allContactDetailsQueries);
+        setScreen(SCREENS.DASHBOARD);
+      } else {
+        setScreen(SCREENS.ADD_CONTACT);
+      }
+      dispatch(initializeUser(user));
+    }
 
+    init();
+  }, [dispatch, localPhoneNumber]);
+
+  useEffect(() => {
     const peer = new Peer(localPhoneNumber);
     peerInstanceRef.current = peer;
 
@@ -26,97 +52,128 @@ const Homepage = () => {
       console.log("you are connected to the server with peerId :", peerId);
     });
 
-    peer.on("call", (call) => {
-      console.log(call);
+    peer.on("connection", (peerId) => {
+      console.log("another user connected to server:", peerId);
+    });
+
+    peer.on("call", async (call) => {
+      remoteCallRef.current = call;
+      const user = await getUserDetails(call.peer);
+
+      call.on("stream", (remoteStream) => {
+        setRemoteStream(remoteStream);
+      });
+
+      call.on("close", () => {
+        handleDisconnectCall();
+      });
+
+      setRemoteContactDetails(user);
       setScreen(SCREENS.CALL_INCOMING);
     });
   }, []);
 
+  console.log(localStream?.getTracks());
   async function makeCall(contact) {
     try {
       const mediaStream = await navigator.mediaDevices.getUserMedia({
         audio: true,
         video: true,
       });
+
       const call = peerInstanceRef.current.call(
         contact.phoneNumber,
         mediaStream
       );
+
+      localCallRef.current = call;
       setScreen(SCREENS.CALL_OUTGOING);
+      setRemoteContactDetails(contact);
+      setLocalStream(mediaStream);
+
       call.on("stream", (remoteStream) => {
         setScreen(SCREENS.CALL_INPROGRESS);
-        remoteStreamRef.current.srcObject = remoteStream;
+        setRemoteStream(remoteStream);
+      });
+
+      call.on("close", () => {
+        handleDisconnectCall();
       });
     } catch (e) {
       console.log("calling failed", e);
     }
   }
 
-  async function handleAddContact(contactDetails, autoCall = false) {
-    autoCall && makeCall(contactDetails.phoneNumber);
-    const localPhoneNumber = localStorage.getItem("phoneNumber");
-    const userDetails = await getUserByPhoneNumber(localPhoneNumber);
+  async function handleAddContact(contactDetails, autoCall = true) {
+    const userDetails = await getUserDetails(state.phoneNumber);
     const updatedDetails = {
       ...userDetails,
-      contacts: [...userDetails.contacts, contactDetails.phoneNumber],
+      contacts: [...(userDetails?.contacts || []), contactDetails.phoneNumber],
     };
-    updatedUser(localPhoneNumber, updatedDetails);
+    const { success } = updateUserDetails(state.phoneNumber, updatedDetails);
+    if (success) {
+      const localUpdate = { ...userDetails };
+      localUpdate.contacts.push(contactDetails);
+      dispatch(addContact(state.phoneNumber, localUpdate));
+      autoCall && makeCall(contactDetails.phoneNumber);
+    }
+  }
+
+  async function handleCallRecieve() {
+    try {
+      const mediaStream = await navigator.mediaDevices.getUserMedia({
+        audio: true,
+        video: true,
+      });
+      remoteCallRef.current.answer(mediaStream);
+      setScreen(SCREENS.CALL_INPROGRESS);
+      setLocalStream(mediaStream);
+    } catch (e) {
+      console.log("calling failed", e);
+    }
+  }
+
+  console.log({ localStream });
+
+  function handleDisconnectCall() {
+    localStream?.getTracks().forEach((track) => {
+      console.log(track);
+      track.stop();
+    });
+    localCallRef.current?.close();
+    localCallRef.current = null;
+    setLocalStream(null);
+
+    remoteCallRef.current?.close();
+    remoteCallRef.current = null;
+    setRemoteStream(null);
+    setRemoteContactDetails(null);
+
+    setScreen(SCREENS.DASHBOARD);
   }
 
   const renderScreen = {
-    [SCREENS.ADD_FIRST_CONTACT]: (
-      <AddContact handleAddContact={handleAddContact} />
-    ),
+    [SCREENS.DASHBOARD]: <Dashboard handleCall={makeCall} />,
+    [SCREENS.ADD_CONTACT]: <AddContact handleAddContact={handleAddContact} />,
     [SCREENS.CALL_OUTGOING]: (
-      <CallOutgoing handleScreenChange={({ screen }) => setScreen(screen)} />
+      <CallOutgoing contactName={remoteContactDetails?.name} handleDisconnect />
     ),
     [SCREENS.CALL_INCOMING]: (
-      <CallIncoming handleScreenChange={({ screen }) => setScreen(screen)} />
+      <CallIncoming
+        callerName={remoteContactDetails?.name}
+        handleCallRecieve={handleCallRecieve}
+      />
     ),
     [SCREENS.CALL_INPROGRESS]: (
       <CallInprogress
-        localStreamRef={localStreamRef}
-        remoteStreamRef={remoteStreamRef}
-        handleScreenChange={({ screen }) => setScreen(screen)}
+        localStream={localStream}
+        remoteStream={remoteStream}
+        handleDisconnect={handleDisconnectCall}
       />
     ),
   };
-  const user = {
-    name: "John",
-    contacts: [
-      {
-        name: "amir",
-        phoneNumber: "123123",
-      },
-    ],
-  };
 
-  function handleCall(contact) {
-    console.log("Calling", contact.name);
-  }
-
-  return (
-    <Layout>
-      {screen && (
-        <Modal isOpen={true} size={"full"}>
-          {renderScreen[screen]}
-        </Modal>
-      )}
-      <Text>Hello {user.name}</Text>
-      <List>
-        {user.contacts.map((contact) => {
-          return (
-            <ListItem
-              key={contact.phoneNumber}
-              onClick={() => handleCall(contact)}
-            >
-              {user.name} <PhoneIcon />
-            </ListItem>
-          );
-        })}
-      </List>
-    </Layout>
-  );
+  return <Layout>{renderScreen[screen]}</Layout>;
 };
 
 export default Homepage;

@@ -5,7 +5,6 @@ import { reducer } from "./userReducer";
 export const UserContext = createContext();
 
 const initialState = {
-  userData: null,
   name: "",
   phoneNumber: "",
   contacts: [],

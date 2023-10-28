@@ -12,7 +12,7 @@ import {
 import { PhoneIcon } from "@chakra-ui/icons";
 import { func } from "prop-types";
 import { useState } from "react";
-import { getUserByPhoneNumber } from "../../../Services/crud";
+import { getUserDetails } from "../../../Services/crud";
 
 const AddContact = ({ handleAddContact }) => {
   const [destPhoneNumber, setDestPhoneNumber] = useState("");
@@ -25,7 +25,7 @@ const AddContact = ({ handleAddContact }) => {
       return;
     }
     setError("");
-    const contactDetails = await getUserByPhoneNumber(destPhoneNumber);
+    const contactDetails = await getUserDetails(destPhoneNumber);
     if (!contactDetails) {
       setError("Check the number again; no contact details for this.");
       return;
@@ -36,7 +36,7 @@ const AddContact = ({ handleAddContact }) => {
   return (
     <>
       <Text>We are one click just away</Text>
-      <FormControl isInvalid={!error}>
+      <FormControl>
         <FormLabel>Phone number</FormLabel>
         <InputGroup mt={5}>
           <InputLeftElement pointerEvents="none">

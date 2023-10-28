@@ -3,28 +3,26 @@ import { useNavigate } from "react-router-dom";
 import Layout from "../../Components/Layout";
 import Introduction from "./Introduction";
 import Registration from "./Registration";
-import About from "./About";
 import { ROUTES, STEPS } from "../../constants";
-import { registerUser, updatedUser } from "../../Services/crud";
+import { registerUser, updateUserDetails } from "../../Services/crud";
 import useUserContext from "../../Context/UserProvider/useUserContext";
 import {
   updateName,
   updatePhoneNumber,
 } from "../../Context/UserProvider/userActions";
+import About from "./About";
 
 const Onboarding = () => {
   const [step, setStep] = useState(STEPS.INTRODUCTION);
   const { state, dispatch } = useUserContext();
   const navigate = useNavigate();
 
-  console.log({ state });
-
   useEffect(() => {
     const localPhoneNumber = localStorage.getItem("phoneNumber");
     if (localPhoneNumber) {
       navigate(ROUTES.HOMEPAGE);
     }
-  }, [navigate]);
+  }, [dispatch, navigate]);
 
   async function handleRegistration(phoneNumber) {
     const { success } = await registerUser(phoneNumber);
@@ -35,10 +33,13 @@ const Onboarding = () => {
     }
   }
 
-  async function handleAboutUpdate(name) {
-    const { success } = await updatedUser(state.phoneNumber, name);
+  async function handleAboutUpdate(updatedUser) {
+    const { success } = await updateUserDetails(state.phoneNumber, {
+      ...state,
+      ...updatedUser,
+    });
     if (success) {
-      dispatch(updateName(name));
+      dispatch(updateName(updatedUser.name));
       navigate(ROUTES.HOMEPAGE);
     }
   }

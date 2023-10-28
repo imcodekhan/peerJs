@@ -18,8 +18,8 @@ export const updatePhoneNumber = (phoneNumber) =>
 
 export const updateName = (name) => createAction(ActionTypes.UPDATE_NAME, name);
 
-export const addContact = (phoneNumber) =>
-  createAction(ActionTypes.ADD_CONTACT, phoneNumber);
+export const addContact = (contactDetails) =>
+  createAction(ActionTypes.ADD_CONTACT, contactDetails);
 
 export const removeContact = (phoneNumber) =>
   createAction(ActionTypes.REMOVE_CONTACT, phoneNumber);

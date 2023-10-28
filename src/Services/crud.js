@@ -1,4 +1,4 @@
-import { getDatabase, ref, set, get, child } from "firebase/database";
+import { getDatabase, ref, set, get } from "firebase/database";
 
 export async function registerUser(phoneNumber) {
   try {
@@ -13,27 +13,25 @@ export async function registerUser(phoneNumber) {
   }
 }
 
-export async function getUserByPhoneNumber(phoneNumber) {
-  console.log("getUserByPhoneNumber");
+export async function getUserDetails(phoneNumber) {
   try {
-    const dbRef = ref(getDatabase());
-    const snapshot = await get(child(dbRef, `users/${phoneNumber}`));
-    console.log(snapshot.val());
+    const db = getDatabase();
+    const dbRef = ref(db, `users/${phoneNumber}`);
+    const snapshot = await get(dbRef);
     if (snapshot.exists()) {
-      console.log(snapshot.val());
       return snapshot.val();
     } else {
-      console.log("No data available");
+      console.error("No data available");
     }
   } catch (error) {
-    console.error("failed to get user details :", error);
+    console.error("failed to get user details: ", error);
   }
 }
 
-export async function updatedUser(phoneNumber, updatedUser) {
+export async function updateUserDetails(phoneNumber, updatedUser) {
   try {
     const db = getDatabase();
-    await set(ref(db, "users/" + phoneNumber), updatedUser);
+    await set(ref(db, "users/" + phoneNumber), { ...updatedUser });
     return { success: true };
   } catch (error) {
     console.error("User registration failed:", error);
