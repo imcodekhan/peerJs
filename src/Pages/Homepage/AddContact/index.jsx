@@ -35,7 +35,9 @@ const AddContact = ({ handleAddContact }) => {
 
   return (
     <>
-      <Text>We are one click just away</Text>
+      <Text color={"white"} fontSize={"36"}>
+        Bondhu&apos;
+      </Text>
       <FormControl>
         <FormLabel>Phone number</FormLabel>
         <InputGroup mt={5}>

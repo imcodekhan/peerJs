@@ -13,9 +13,10 @@ import {
   initializeUser,
 } from "../../Context/UserProvider/userActions";
 import Dashboard from "./Dashboard";
+import { Spinner } from "@chakra-ui/react";
 
 const Homepage = () => {
-  const [screen, setScreen] = useState(SCREENS.DASHBOARD);
+  const [screen, setScreen] = useState();
   const [localStream, setLocalStream] = useState();
   const [remoteStream, setRemoteStream] = useState();
   const { state, dispatch } = useUserContenxt();
@@ -24,8 +25,10 @@ const Homepage = () => {
   const peerInstanceRef = useRef(null);
   const localCallRef = useRef(null);
   const remoteCallRef = useRef(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
+    setIsLoading(true);
     async function init() {
       const user = await getUserDetails(localPhoneNumber);
       const allContactDetailsQueries = [];
@@ -39,6 +42,7 @@ const Homepage = () => {
         setScreen(SCREENS.ADD_CONTACT);
       }
       dispatch(initializeUser(user));
+      setIsLoading(false);
     }
 
     init();
@@ -73,7 +77,6 @@ const Homepage = () => {
     });
   }, []);
 
-  console.log(localStream?.getTracks());
   async function makeCall(contact) {
     try {
       const mediaStream = await navigator.mediaDevices.getUserMedia({
@@ -133,11 +136,8 @@ const Homepage = () => {
     }
   }
 
-  console.log({ localStream });
-
   function handleDisconnectCall() {
     localStream?.getTracks().forEach((track) => {
-      console.log(track);
       track.stop();
     });
     localCallRef.current?.close();
@@ -153,7 +153,12 @@ const Homepage = () => {
   }
 
   const renderScreen = {
-    [SCREENS.DASHBOARD]: <Dashboard handleCall={makeCall} />,
+    [SCREENS.DASHBOARD]: (
+      <Dashboard
+        handleCall={makeCall}
+        handleAddContact={() => setScreen(SCREENS.ADD_CONTACT)}
+      />
+    ),
     [SCREENS.ADD_CONTACT]: <AddContact handleAddContact={handleAddContact} />,
     [SCREENS.CALL_OUTGOING]: (
       <CallOutgoing contactName={remoteContactDetails?.name} handleDisconnect />
@@ -173,7 +178,20 @@ const Homepage = () => {
     ),
   };
 
-  return <Layout>{renderScreen[screen]}</Layout>;
+  return (
+    <Layout showHeader={screen === SCREENS.DASHBOARD}>
+      {isLoading && (
+        <Spinner
+          thickness="4px"
+          speed="0.65s"
+          emptyColor="yellow.200"
+          color="yellow.500"
+          size="xl"
+        />
+      )}
+      {renderScreen[screen]}
+    </Layout>
+  );
 };
 
 export default Homepage;
