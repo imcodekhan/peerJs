@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { func } from "prop-types";
-import { Button, Center, Input, Text } from "@chakra-ui/react";
-import { ArrowRightIcon } from "@chakra-ui/icons";
+import NextButton from "../../../Components/NextButton";
+import { Input, Text } from "@chakra-ui/react";
 
 const About = ({ handleAboutUpdate }) => {
   const [name, setName] = useState("");
@@ -36,17 +36,8 @@ const About = ({ handleAboutUpdate }) => {
         onChange={(e) => setName(e.target.value)}
       />
       {error && <Text>{error}</Text>}
-      <Center>
-        <Button
-          variant={"solid"}
-          borderRadius={"full"}
-          height={90}
-          width={90}
-          onClick={handleSubmit}
-        >
-          <ArrowRightIcon color={"blue.500"} height={30} width={30} />
-        </Button>
-      </Center>
+
+      <NextButton handleNextStep={handleSubmit} />
     </>
   );
 };

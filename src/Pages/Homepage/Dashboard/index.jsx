@@ -1,12 +1,4 @@
-import {
-  Avatar,
-  Button,
-  Flex,
-  Input,
-  List,
-  ListItem,
-  Text,
-} from "@chakra-ui/react";
+import { Avatar, Button, Container, Flex, Input, Text } from "@chakra-ui/react";
 import useUserContenxt from "../../../Context/UserProvider/useUserContext";
 import { AddIcon } from "@chakra-ui/icons";
 import { func } from "prop-types";
@@ -55,37 +47,38 @@ const Dashboard = ({ handleCall, handleAddContact }) => {
       {isEmptyState && <div>empty state</div>}
       {isNoResultFound && <div>no result found</div>}
       {!!filteredContacts.length && (
-        <List>
+        <Flex>
           {filteredContacts.map((contact) => {
             return (
-              <ListItem
+              <Container
                 key={contact.phoneNumber}
                 onClick={() => handleCall(contact)}
                 height={100}
                 width={100}
                 borderRadius={8}
-                backgroundColor={"yellow"}
+                color={"white"}
+                backgroundColor={"black"}
                 display={"flex"}
                 flexDirection={"column"}
                 alignItems={"center"}
                 justifyContent={"space-evenly"}
                 _hover={{
-                  backgroundColor: "black",
-                  color: "white",
+                  backgroundColor: "white",
+                  color: "black",
                 }}
               >
-                <Avatar mt={3} />
+                <Avatar mt={3} size={"md"} />
                 <Text
-                  fontSize={28}
+                  fontSize={16}
                   fontWeight={"extrabold"}
                   textTransform={"capitalize"}
                 >
                   {contact.name}
                 </Text>
-              </ListItem>
+              </Container>
             );
           })}
-        </List>
+        </Flex>
       )}
     </>
   );

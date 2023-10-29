@@ -1,8 +1,6 @@
 import { useState } from "react";
 import { func } from "prop-types";
 import {
-  Button,
-  Center,
   FormControl,
   FormErrorMessage,
   FormHelperText,
@@ -12,7 +10,7 @@ import {
   InputLeftElement,
   Text,
 } from "@chakra-ui/react";
-import { ArrowRightIcon } from "@chakra-ui/icons";
+import NextButton from "../../../Components/NextButton";
 
 const Registration = ({ handleRegistration }) => {
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -57,17 +55,7 @@ const Registration = ({ handleRegistration }) => {
         <FormHelperText>your phone number is secure with us*</FormHelperText>
       </FormControl>
 
-      <Center mt={error ? 17 : 10}>
-        <Button
-          variant={"solid"}
-          borderRadius={"full"}
-          height={90}
-          width={90}
-          onClick={handlesubmit}
-        >
-          <ArrowRightIcon color={"blue.500"} height={30} width={30} />
-        </Button>
-      </Center>
+      <NextButton handleNextStep={handlesubmit} />
     </>
   );
 };

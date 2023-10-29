@@ -4,7 +4,12 @@ import { bool, node } from "prop-types";
 const Layout = ({ children, showHeader }) => {
   return (
     <Center height={"100vh"} backgroundColor={"blue.100"}>
-      <Card overflow={"hidden"}>
+      <Card
+        overflow={"hidden"}
+        backgroundColor={"yellow"}
+        height={400}
+        width={300}
+      >
         {showHeader && (
           <CardHeader
             backgroundColor={"black"}
@@ -15,7 +20,7 @@ const Layout = ({ children, showHeader }) => {
             <Text>Pager</Text>
           </CardHeader>
         )}
-        <CardBody>{children}</CardBody>
+        <CardBody color="black">{children}</CardBody>
       </Card>
     </Center>
   );

@@ -1,37 +1,24 @@
-import { ArrowRightIcon } from "@chakra-ui/icons";
-import { Button, Center, Text } from "@chakra-ui/react";
+import { Text } from "@chakra-ui/react";
 import { func } from "prop-types";
 import { STEPS } from "../../../constants";
+import NextButton from "../../../Components/NextButton";
 
 const Introduction = ({ handleNextStep }) => {
   return (
     <>
-      <Text fontSize={22} textAlign={"center"} textColor={"white"}>
+      <Text fontSize={22} textAlign={"center"}>
         Missing your
       </Text>
-      <Text
-        textColor={"white"}
-        fontSize={56}
-        fontWeight={"extrabold"}
-        textAlign={"center"}
-      >
+      <Text fontSize={56} fontWeight={"extrabold"} textAlign={"center"}>
         Bondhu
       </Text>
-      <Text fontSize={22} textAlign={"center"} textColor={"white"}>
+      <Text fontSize={22} textAlign={"center"}>
         Lets fix that, in 2 easy steps
       </Text>
 
-      <Center>
-        <Button
-          variant={"solid"}
-          borderRadius={"full"}
-          height={90}
-          width={90}
-          onClick={() => handleNextStep({ step: STEPS.REGISTRATION })}
-        >
-          <ArrowRightIcon color={"blue.500"} height={30} width={30} />
-        </Button>
-      </Center>
+      <NextButton
+        handleNextStep={() => handleNextStep({ step: STEPS.REGISTRATION })}
+      />
     </>
   );
 };

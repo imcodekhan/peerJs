@@ -40,7 +40,7 @@ const Onboarding = () => {
     });
     if (success) {
       dispatch(updateName(updatedUser.name));
-      navigate(ROUTES.HOMEPAGE);
+      navigate(`${ROUTES.HOMEPAGE}?isFirstContact=true`);
     }
   }
 

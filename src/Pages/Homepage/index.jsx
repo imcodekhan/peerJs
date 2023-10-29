@@ -1,4 +1,4 @@
-import { SCREENS } from "../../constants";
+import { ROUTES, SCREENS } from "../../constants";
 import { useEffect, useRef, useState } from "react";
 import CallOutgoing from "./CallOutgoing";
 import CallIncoming from "./CallInprogress/CallIcoming";
@@ -13,7 +13,8 @@ import {
   initializeUser,
 } from "../../Context/UserProvider/userActions";
 import Dashboard from "./Dashboard";
-import { Spinner } from "@chakra-ui/react";
+import { Center, Spinner } from "@chakra-ui/react";
+import { useNavigate } from "react-router-dom";
 
 const Homepage = () => {
   const [screen, setScreen] = useState();
@@ -26,6 +27,14 @@ const Homepage = () => {
   const localCallRef = useRef(null);
   const remoteCallRef = useRef(null);
   const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const localPhoneNumber = localStorage.getItem("phoneNumber");
+    if (!localPhoneNumber) {
+      navigate(ROUTES.ONBOARDING);
+    }
+  }, [dispatch, navigate]);
 
   useEffect(() => {
     setIsLoading(true);
@@ -79,6 +88,7 @@ const Homepage = () => {
 
   async function makeCall(contact) {
     try {
+      setRemoteContactDetails(contact);
       const mediaStream = await navigator.mediaDevices.getUserMedia({
         audio: true,
         video: true,
@@ -91,7 +101,6 @@ const Homepage = () => {
 
       localCallRef.current = call;
       setScreen(SCREENS.CALL_OUTGOING);
-      setRemoteContactDetails(contact);
       setLocalStream(mediaStream);
 
       call.on("stream", (remoteStream) => {
@@ -159,14 +168,23 @@ const Homepage = () => {
         handleAddContact={() => setScreen(SCREENS.ADD_CONTACT)}
       />
     ),
-    [SCREENS.ADD_CONTACT]: <AddContact handleAddContact={handleAddContact} />,
+    [SCREENS.ADD_CONTACT]: (
+      <AddContact
+        handleAddContact={handleAddContact}
+        handleBack={() => setScreen(SCREENS.DASHBOARD)}
+      />
+    ),
     [SCREENS.CALL_OUTGOING]: (
-      <CallOutgoing contactName={remoteContactDetails?.name} handleDisconnect />
+      <CallOutgoing
+        contact={remoteContactDetails}
+        handleCallDisconnect={handleDisconnectCall}
+      />
     ),
     [SCREENS.CALL_INCOMING]: (
       <CallIncoming
-        callerName={remoteContactDetails?.name}
+        caller={remoteContactDetails}
         handleCallRecieve={handleCallRecieve}
+        handleCallDisconnect={handleDisconnectCall}
       />
     ),
     [SCREENS.CALL_INPROGRESS]: (
@@ -178,16 +196,20 @@ const Homepage = () => {
     ),
   };
 
+  console.log({ remoteContactDetails });
+
   return (
     <Layout showHeader={screen === SCREENS.DASHBOARD}>
       {isLoading && (
-        <Spinner
-          thickness="4px"
-          speed="0.65s"
-          emptyColor="yellow.200"
-          color="yellow.500"
-          size="xl"
-        />
+        <Center height={"100%"} width={"100%"}>
+          <Spinner
+            thickness="4px"
+            speed="0.65s"
+            emptyColor="yellow.200"
+            color="yellow.500"
+            size="xl"
+          />
+        </Center>
       )}
       {renderScreen[screen]}
     </Layout>
