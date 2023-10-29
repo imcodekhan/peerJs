@@ -1,18 +1,17 @@
 import { Avatar, Button, Container, Flex, Input, Text } from "@chakra-ui/react";
 import useUserContenxt from "../../../Context/UserProvider/useUserContext";
-import { AddIcon } from "@chakra-ui/icons";
+import { AddIcon, SmallCloseIcon } from "@chakra-ui/icons";
 import { func } from "prop-types";
 import { useState } from "react";
 
-const Dashboard = ({ handleCall, handleAddContact }) => {
+const Dashboard = ({ handleCall, handleAddContact, handleRemoveContact }) => {
   const { state } = useUserContenxt();
   const [search, setSearch] = useState("");
 
   const filteredContacts =
-    state?.contacts.filter((contact) =>
+    state?.contacts?.filter((contact) =>
       contact.name.toLowerCase().includes(search.toLowerCase())
     ) || [];
-
   const isEmptyState = !!(state?.conctacts?.length === 0);
   const isNoResultFound = !!(search.length && filteredContacts.length === 0);
 
@@ -67,7 +66,21 @@ const Dashboard = ({ handleCall, handleAddContact }) => {
                   color: "black",
                 }}
               >
-                <Avatar mt={3} size={"md"} />
+                <SmallCloseIcon
+                  alignSelf={"end"}
+                  mt={"5px"}
+                  mr={"-10px"}
+                  borderRadius={"full"}
+                  _hover={{
+                    backgroundColor: "red",
+                    color: "white",
+                  }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleRemoveContact(contact);
+                  }}
+                />
+                <Avatar size={"md"} />
                 <Text
                   fontSize={16}
                   fontWeight={"extrabold"}
@@ -87,6 +100,7 @@ const Dashboard = ({ handleCall, handleAddContact }) => {
 Dashboard.propTypes = {
   handleCall: func.isRequired,
   handleAddContact: func.isRequired,
+  handleRemoveContact: func.isRequired,
 };
 
 export default Dashboard;

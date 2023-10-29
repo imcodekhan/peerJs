@@ -26,7 +26,7 @@ export const reducer = (state, action) => {
       return {
         ...state,
         contacts: state.contacts.filter(
-          (phoneNumber) => phoneNumber !== action.payload
+          (contact) => contact.phoneNumber !== action.payload
         ),
       };
     default:

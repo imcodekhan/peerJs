@@ -10,7 +10,7 @@ import {
 } from "@chakra-ui/react";
 import { ArrowBackIcon, PhoneIcon } from "@chakra-ui/icons";
 import { func } from "prop-types";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { getUserDetails } from "../../../Services/crud";
 import { ROUTES } from "../../../constants";
 import useUserContenxt from "../../../Context/UserProvider/useUserContext";
@@ -18,16 +18,15 @@ import useUserContenxt from "../../../Context/UserProvider/useUserContext";
 const AddContact = ({ handleAddContact, handleBack }) => {
   const { state } = useUserContenxt();
   const params = new URLSearchParams(location.search);
-  const isFirstContact = params.get("isFirstContact");
-
+  const isFirstContact = useRef(params.get("isFirstContact"));
   const [destPhoneNumber, setDestPhoneNumber] = useState("");
   const [error, setError] = useState("");
 
   useEffect(() => {
-    if (isFirstContact) {
+    if (isFirstContact.current) {
       history.pushState(null, null, ROUTES.HOMEPAGE);
     }
-  }, [isFirstContact]);
+  }, []);
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -46,12 +45,12 @@ const AddContact = ({ handleAddContact, handleBack }) => {
     }
 
     setError("");
-    handleAddContact(contactDetails);
+    handleAddContact(contactDetails, isFirstContact.current);
   }
 
   return (
     <>
-      {!isFirstContact && <ArrowBackIcon onClick={handleBack} />}
+      <ArrowBackIcon onClick={handleBack} />
       <Text fontSize={"36"}>new Bondhu&apos;s</Text>
       <FormControl>
         <FormLabel>Phone number</FormLabel>
@@ -74,7 +73,7 @@ const AddContact = ({ handleAddContact, handleBack }) => {
         <Text>{error}</Text>
       </FormControl>
       <Center mt={3}>
-        {isFirstContact ? (
+        {isFirstContact.current ? (
           <Button
             variant={"solid"}
             borderRadius={"full"}
